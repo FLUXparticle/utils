@@ -3,6 +3,7 @@ package de.fluxparticle.utils.chain;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Iterator;
+import java.util.Optional;
 
 /**
  * Created by sreinck on 21.12.16.
@@ -50,5 +51,33 @@ public abstract class Chain<T> implements Iterable<T> {
     public abstract T head();
 
     public abstract Chain<T> tail();
+
+    protected abstract Optional<String> optionalHead();
+
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            sb.append('[');
+
+            String delimiter = "";
+            for (Chain<T> chain = this; ; chain = chain.tail()) {
+                sb.append(delimiter);
+                Optional<String> optString = chain.optionalHead();
+                if (optString.isPresent()) {
+                    sb.append(optString.get());
+                } else {
+                    break;
+                }
+                delimiter = ", ";
+            }
+
+            sb.append("]");
+        } catch (IllegalStateException e) {
+            sb.append("...");
+        }
+
+        return sb.toString();
+    }
 
 }

@@ -1,5 +1,6 @@
 package de.fluxparticle.utils.chain;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -28,6 +29,14 @@ public class LazyChain<T> extends Chain<T> {
     @Override
     public Chain<T> tail() {
         return getChain().tail();
+    }
+
+    @Override
+    protected Optional<String> optionalHead() {
+        if (chain == null) {
+            throw new IllegalStateException();
+        }
+        return chain.optionalHead();
     }
 
     private Chain<T> getChain() {

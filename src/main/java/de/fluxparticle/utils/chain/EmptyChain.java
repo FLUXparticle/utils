@@ -1,6 +1,7 @@
 package de.fluxparticle.utils.chain;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * Created by sreinck on 21.12.16.
@@ -31,6 +32,11 @@ public class EmptyChain<T> extends Chain<T> {
     @Override
     public Chain<T> tail() {
         throw new NoSuchElementException();
+    }
+
+    @Override
+    protected Optional<String> optionalHead() {
+        return Optional.empty();
     }
 
 }
