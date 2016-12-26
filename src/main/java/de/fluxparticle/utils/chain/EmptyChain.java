@@ -8,12 +8,7 @@ import java.util.Optional;
  */
 public class EmptyChain<T> extends Chain<T> {
 
-    private static Chain EMPTY = new EmptyChain();
-
-    @SuppressWarnings("unchecked")
-    public static <T> Chain<T> empty() {
-        return EMPTY;
-    }
+    static Chain EMPTY = new EmptyChain();
 
     private EmptyChain() {
         // empty
@@ -36,7 +31,12 @@ public class EmptyChain<T> extends Chain<T> {
 
     @Override
     protected Optional<String> optionalHead() {
-        return Optional.empty();
+        throw new NoSuchElementException();
+    }
+
+    @Override
+    public Chain<T> concat(Chain<T> other) {
+        return other;
     }
 
 }

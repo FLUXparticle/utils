@@ -33,10 +33,7 @@ public class LazyChain<T> extends Chain<T> {
 
     @Override
     protected Optional<String> optionalHead() {
-        if (chain == null) {
-            throw new IllegalStateException();
-        }
-        return chain.optionalHead();
+        return Optional.ofNullable(chain).flatMap(Chain::optionalHead);
     }
 
     private Chain<T> getChain() {

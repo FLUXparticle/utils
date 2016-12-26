@@ -3,12 +3,22 @@ package de.fluxparticle.utils.chain;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
  * Created by sreinck on 21.12.16.
  */
 public abstract class Chain<T> implements Iterable<T> {
+
+    @SuppressWarnings("unchecked")
+    public static <T> Chain<T> emptyChain() {
+        return EmptyChain.EMPTY;
+    }
+
+    public static <T> Chain<T> singletonChain(T t) {
+        return new EagerChain<>(t, emptyChain());
+    }
 
     public static Chain<Character> fromReader(Reader reader) {
         return new LazyChain<>(() -> {
@@ -21,7 +31,7 @@ public abstract class Chain<T> implements Iterable<T> {
             if (ch >= 0) {
                 return new EagerChain<>((char) ch, fromReader(reader));
             } else {
-                return EmptyChain.empty();
+                return emptyChain();
             }
         });
     }
@@ -54,6 +64,15 @@ public abstract class Chain<T> implements Iterable<T> {
 
     protected abstract Optional<String> optionalHead();
 
+    public Chain<T> concat(Chain<T> other) {
+        if (other.isEmpty()) {
+            return this;
+        } else {
+            return new ConcatChain<>(this, other);
+        }
+    }
+
+    @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
 
@@ -62,8 +81,8 @@ public abstract class Chain<T> implements Iterable<T> {
 
             String delimiter = "";
             for (Chain<T> chain = this; ; chain = chain.tail()) {
-                sb.append(delimiter);
                 Optional<String> optString = chain.optionalHead();
+                sb.append(delimiter);
                 if (optString.isPresent()) {
                     sb.append(optString.get());
                 } else {
@@ -72,9 +91,9 @@ public abstract class Chain<T> implements Iterable<T> {
                 delimiter = ", ";
             }
 
-            sb.append("]");
-        } catch (IllegalStateException e) {
             sb.append("...");
+        } catch (NoSuchElementException e) {
+            sb.append("]");
         }
 
         return sb.toString();
