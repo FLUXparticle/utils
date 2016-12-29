@@ -18,7 +18,7 @@ public class ConcatChain<T> extends Chain<T> {
 
     @Override
     public boolean isEmpty() {
-        return left.isEmpty();
+        return left.isEmpty() && right.isEmpty();
     }
 
     @Override

@@ -32,6 +32,11 @@ public class LazyChain<T> extends Chain<T> {
     }
 
     @Override
+    public Chain<T> concat(Chain<T> other) {
+        return getChain().concat(other);
+    }
+
+    @Override
     protected Optional<String> optionalHead() {
         return Optional.ofNullable(chain).flatMap(Chain::optionalHead);
     }

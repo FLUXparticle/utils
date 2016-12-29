@@ -36,6 +36,17 @@ public abstract class Chain<T> implements Iterable<T> {
         });
     }
 
+    public static <T> Chain<T> fromIterator(Iterator<? extends T> iterator) {
+        return new LazyChain<>(() -> {
+            if (iterator.hasNext()) {
+                T next = iterator.next();
+                return new EagerChain<>(next, fromIterator(iterator));
+            } else {
+                return emptyChain();
+            }
+        });
+    }
+
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
