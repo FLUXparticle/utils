@@ -1,6 +1,9 @@
 package de.fluxparticle.utils.chain;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -34,6 +37,22 @@ public class LazyChain<T> extends Chain<T> {
     @Override
     public Chain<T> concat(Chain<T> other) {
         return getChain().concat(other);
+    }
+
+    public <R> Chain<R> map(Function<T, R> function) {
+        return getChain().map(function);
+    }
+
+    public <R> R reduce(R initValue, BiFunction<R, T, R> function) {
+        return getChain().reduce(initValue, function);
+    }
+
+    public T reduce(BinaryOperator<T> function) {
+        return getChain().reduce(function);
+    }
+
+    public <R> Chain<R> flatMap(Function<T, Chain<R>> function) {
+        return getChain().flatMap(function);
     }
 
     @Override

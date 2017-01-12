@@ -5,6 +5,11 @@ import java.io.Reader;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+
+import static java.util.Arrays.asList;
 
 /**
  * Created by sreinck on 21.12.16.
@@ -47,6 +52,11 @@ public abstract class Chain<T> implements Iterable<T> {
         });
     }
 
+    @SafeVarargs
+    public static <T> Chain<T> from(T... ts) {
+        return fromIterator(asList(ts).iterator());
+    }
+
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
@@ -64,6 +74,7 @@ public abstract class Chain<T> implements Iterable<T> {
                 chain = chain.tail();
                 return head;
             }
+
         };
     }
 
@@ -81,6 +92,27 @@ public abstract class Chain<T> implements Iterable<T> {
         } else {
             return new ConcatChain<>(this, other);
         }
+    }
+
+    public <R> Chain<R> map(Function<T, R> function) {
+        return new LazyChain<>(() -> {
+            R mappedHead = function.apply(head());
+            Chain<R> mappedTail = tail().map(function);
+            return new EagerChain<>(mappedHead, mappedTail);
+        });
+    }
+
+    public <R> R reduce(R initValue, BiFunction<R, T, R> function) {
+        R reduction = function.apply(initValue, head());
+        return tail().reduce(reduction, function);
+    }
+
+    public T reduce(BinaryOperator<T> function) {
+        return tail().reduce(head(), function);
+    }
+
+    public <R> Chain<R> flatMap(Function<T, Chain<R>> function) {
+        return map(function).reduce(Chain::concat);
     }
 
     @Override
