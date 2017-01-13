@@ -9,7 +9,7 @@ import java.util.function.Function;
 /**
  * Created by sreinck on 21.12.16.
  */
-public class EmptyChain<T> extends Chain<T> {
+class EmptyChain<T> extends Chain<T> {
 
     static Chain EMPTY = new EmptyChain();
 
@@ -42,8 +42,16 @@ public class EmptyChain<T> extends Chain<T> {
         return other;
     }
 
+    public Chain<T> take(int count) {
+        return this;
+    }
+
     public <R> Chain<R> map(Function<T, R> function) {
         return emptyChain();
+    }
+
+    public <S, R> Chain<R> zipWith(Chain<S> other, BiFunction<T, S, R> function) {
+            return emptyChain();
     }
 
     public <R> R reduce(R initValue, BiFunction<R, T, R> function) {

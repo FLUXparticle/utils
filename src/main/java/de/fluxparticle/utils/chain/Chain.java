@@ -25,31 +25,48 @@ public abstract class Chain<T> implements Iterable<T> {
         return new EagerChain<>(t, emptyChain());
     }
 
+    public static <T> Chain<T> cons(T head, Chain<T> tail) {
+        return new EagerChain<>(head, tail);
+    }
+
+    public static <T> Chain<T> repeatChain(T t) {
+        return new LazyChain<>(() -> new EagerChain<>(t, repeatChain(t)));
+    }
+
+    public static Chain<Integer> rangeChain(int start, int end) {
+        if (start <= end) {
+            return new LazyChain<>(() -> new EagerChain<>(start, rangeChain(start+1, end)));
+        } else {
+            return emptyChain();
+        }
+    }
+
     public static Chain<Character> fromReader(Reader reader) {
-        return new LazyChain<>(() -> {
-            int ch;
-            try {
-                ch = reader.read();
-            } catch (IOException e) {
-                ch = -1;
-            }
+        try {
+            int ch = reader.read();
             if (ch >= 0) {
-                return new EagerChain<>((char) ch, fromReader(reader));
-            } else {
-                return emptyChain();
+                return new LazyChain<>(() -> new EagerChain<>((char) ch, fromReader(reader)));
             }
-        });
+        } catch (IOException ignored) {
+        }
+        return emptyChain();
+    }
+
+    public static <T> Chain<T> fromNullable(T t) {
+        if (t == null) {
+            return emptyChain();
+        } else {
+            return singletonChain(t);
+        }
     }
 
     public static <T> Chain<T> fromIterator(Iterator<? extends T> iterator) {
-        return new LazyChain<>(() -> {
-            if (iterator.hasNext()) {
-                T next = iterator.next();
-                return new EagerChain<>(next, fromIterator(iterator));
-            } else {
-                return emptyChain();
-            }
-        });
+        if (iterator.hasNext()) {
+            T next = iterator.next();
+            return new LazyChain<>(() -> new EagerChain<>(next, fromIterator(iterator)));
+        } else {
+            return emptyChain();
+        }
     }
 
     @SafeVarargs
@@ -90,7 +107,15 @@ public abstract class Chain<T> implements Iterable<T> {
         if (other.isEmpty()) {
             return this;
         } else {
-            return new ConcatChain<>(this, other);
+            return new LazyChain<>(() -> new EagerChain<>(head(), tail().concat(other)));
+        }
+    }
+
+    public Chain<T> take(int count) {
+        if (count > 0) {
+            return new LazyChain<>(() -> new EagerChain<>(head(), tail().take(count - 1)));
+        } else {
+            return emptyChain();
         }
     }
 
@@ -100,6 +125,14 @@ public abstract class Chain<T> implements Iterable<T> {
             Chain<R> mappedTail = tail().map(function);
             return new EagerChain<>(mappedHead, mappedTail);
         });
+    }
+
+    public <S, R> Chain<R> zipWith(Chain<S> other, BiFunction<T, S, R> function) {
+        if (other.isEmpty()) {
+            return emptyChain();
+        } else {
+            return new LazyChain<>(() -> new EagerChain<>(function.apply(head(), other.head()), tail().zipWith(other.tail(), function)));
+        }
     }
 
     public <R> R reduce(R initValue, BiFunction<R, T, R> function) {

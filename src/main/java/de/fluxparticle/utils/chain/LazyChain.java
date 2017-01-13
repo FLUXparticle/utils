@@ -39,6 +39,10 @@ public class LazyChain<T> extends Chain<T> {
         return getChain().concat(other);
     }
 
+    public <S, R> Chain<R> zipWith(Chain<S> other, BiFunction<T, S, R> function) {
+        return getChain().zipWith(other, function);
+    }
+
     public <R> Chain<R> map(Function<T, R> function) {
         return getChain().map(function);
     }
