@@ -50,8 +50,8 @@ public class EmptyChain<T> extends Chain<T> {
         return initValue;
     }
 
-    public T reduce(BinaryOperator<T> function) {
-        throw new NoSuchElementException();
+    public Optional<T> reduce(BinaryOperator<T> function) {
+        return Optional.empty();
     }
 
     public <R> Chain<R> flatMap(Function<T, Chain<R>> function) {

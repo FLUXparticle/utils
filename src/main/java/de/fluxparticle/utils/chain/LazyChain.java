@@ -47,7 +47,7 @@ public class LazyChain<T> extends Chain<T> {
         return getChain().reduce(initValue, function);
     }
 
-    public T reduce(BinaryOperator<T> function) {
+    public Optional<T> reduce(BinaryOperator<T> function) {
         return getChain().reduce(function);
     }
 

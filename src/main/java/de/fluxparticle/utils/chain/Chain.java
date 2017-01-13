@@ -107,12 +107,12 @@ public abstract class Chain<T> implements Iterable<T> {
         return tail().reduce(reduction, function);
     }
 
-    public T reduce(BinaryOperator<T> function) {
-        return tail().reduce(head(), function);
+    public Optional<T> reduce(BinaryOperator<T> function) {
+        return Optional.of(tail().reduce(head(), function));
     }
 
     public <R> Chain<R> flatMap(Function<T, Chain<R>> function) {
-        return map(function).reduce(Chain::concat);
+        return map(function).reduce(emptyChain(), Chain::concat);
     }
 
     @Override
