@@ -54,11 +54,11 @@ class EmptyChain<T> extends Chain<T> {
             return emptyChain();
     }
 
-    public <R> R reduce(R initValue, BiFunction<R, T, R> function) {
+    public <R> R foldl(R initValue, BiFunction<R, T, R> function) {
         return initValue;
     }
 
-    public Optional<T> reduce(BinaryOperator<T> function) {
+    public Optional<T> foldl1(BinaryOperator<T> function) {
         return Optional.empty();
     }
 

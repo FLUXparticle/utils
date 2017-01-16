@@ -47,12 +47,12 @@ public class LazyChain<T> extends Chain<T> {
         return getChain().map(function);
     }
 
-    public <R> R reduce(R initValue, BiFunction<R, T, R> function) {
-        return getChain().reduce(initValue, function);
+    public <R> R foldl(R initValue, BiFunction<R, T, R> function) {
+        return getChain().foldl(initValue, function);
     }
 
-    public Optional<T> reduce(BinaryOperator<T> function) {
-        return getChain().reduce(function);
+    public Optional<T> foldl1(BinaryOperator<T> function) {
+        return getChain().foldl1(function);
     }
 
     public <R> Chain<R> flatMap(Function<T, Chain<R>> function) {

@@ -135,17 +135,17 @@ public abstract class Chain<T> implements Iterable<T> {
         }
     }
 
-    public <R> R reduce(R initValue, BiFunction<R, T, R> function) {
+    public <R> R foldl(R initValue, BiFunction<R, T, R> function) {
         R reduction = function.apply(initValue, head());
-        return tail().reduce(reduction, function);
+        return tail().foldl(reduction, function);
     }
 
-    public Optional<T> reduce(BinaryOperator<T> function) {
-        return Optional.of(tail().reduce(head(), function));
+    public Optional<T> foldl1(BinaryOperator<T> function) {
+        return Optional.of(tail().foldl(head(), function));
     }
 
     public <R> Chain<R> flatMap(Function<T, Chain<R>> function) {
-        return map(function).reduce(emptyChain(), Chain::concat);
+        return map(function).foldl(emptyChain(), Chain::concat);
     }
 
     @Override
