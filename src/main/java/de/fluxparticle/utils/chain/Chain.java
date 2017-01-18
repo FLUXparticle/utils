@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 
@@ -146,6 +148,10 @@ public abstract class Chain<T> implements Iterable<T> {
 
     public <R> Chain<R> flatMap(Function<T, Chain<R>> function) {
         return map(function).foldl(emptyChain(), Chain::concat);
+    }
+
+    public final Stream<T> asStream() {
+        return StreamSupport.stream(spliterator(), false);
     }
 
     @Override
