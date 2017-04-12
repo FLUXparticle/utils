@@ -1,6 +1,7 @@
 package de.fluxparticle.utils.chain;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -40,6 +41,17 @@ public abstract class Chain<T> implements Iterable<T> {
         } else {
             return emptyChain();
         }
+    }
+
+    public static Chain<Integer> fromInputStream(InputStream stream) {
+        try {
+            int b = stream.read();
+            if (b >= 0) {
+                return new LazyChain<>(() -> new EagerChain<>(b, fromInputStream(stream)));
+            }
+        } catch (IOException ignored) {
+        }
+        return emptyChain();
     }
 
     public static Chain<Character> fromReader(Reader reader) {
