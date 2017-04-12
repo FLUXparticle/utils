@@ -99,6 +99,14 @@ public abstract class Chain<T> implements Iterable<T> {
         return fromIterator(asList(ts).iterator());
     }
 
+    public static <T> Chain<T> subtractChain(Chain<T> chainA, Chain<T> chainB) {
+        if (chainA != chainB && !chainA.isEmpty()) {
+            return new LazyChain<>(() -> new EagerChain<>(chainA.head(), subtractChain(chainA.tail(), chainB)));
+        } else {
+            return emptyChain();
+        }
+    }
+
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
