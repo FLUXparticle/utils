@@ -108,24 +108,8 @@ public abstract class Chain<T> implements Iterable<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
-        return new Iterator<T>() {
-
-            Chain<T> chain = Chain.this;
-
-            @Override
-            public boolean hasNext() {
-                return !chain.isEmpty();
-            }
-
-            @Override
-            public T next() {
-                T head = chain.head();
-                chain = chain.tail();
-                return head;
-            }
-
-        };
+    public ChainIterator<T> iterator() {
+        return new ChainIterator<>(this);
     }
 
     public abstract boolean isEmpty();
